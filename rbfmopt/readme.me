@@ -1,0 +1,8 @@
+which should replace the perspective files in your RBFopt folder.
+RBFOpt should still work, but please check.
+
+You can run this from anywhere using command line arguments:
+python mopossum_180807.py --optimizeRBFWeightedSum --param 1;-10;10;0 --objectiveN 2
+
+But It's probably best to extract the actual algorithm (lines 524-50, plus helper function), and to put it into its own class RBFMopt.py.
+
