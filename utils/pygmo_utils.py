@@ -18,9 +18,11 @@ def calculate_weighted_objective(weights, values, rho):
     return aug_tcheby
 
 # Calculates the hypervolume with a changing ref point
-def reconstruct_hv_per_feval_rbfmopt(max_fevals, x_list, f_list, hv_pop):
+def reconstruct_hv_per_feval(max_fevals, x_list, f_list, hv_pop):
     # Have the same ref point at the beginning, and compute the starting hypervolume
-    hv = []
+    hv = [0]
+
+    x = hv_pop.get_x()
 
     for fevals in range(max_fevals):
         hv_pop.push_back(x_list[fevals], f_list[fevals])
@@ -31,7 +33,8 @@ def reconstruct_hv_per_feval_rbfmopt(max_fevals, x_list, f_list, hv_pop):
     return hv
 
 # Calculates the hypervolume with all the old points from the old generations
-def reconstruct_hv_per_feval(max_fevals, x_list, f_list, hv_pop):
+# But starts with a full population
+def reconstruct_hv_per_feval_meta(max_fevals, x_list, f_list, hv_pop):
     # Have the same ref point at the beginning, and compute the starting hypervolume
     original_hv = pg.hypervolume(hv_pop)
     ref = original_hv.refpoint(offset=4.0)
@@ -62,9 +65,9 @@ def get_hv_for_algo(algo, max_fevals, pop_size, seed, problem):
         f_list = numpy.concatenate((f_list, pop.get_f()))
         x_list = numpy.concatenate((x_list, pop.get_x()))
 
-    pop_original = pg.population(problem, pop_size, seed)
+    pop_empty = pg.population(prob=problem, seed=seed)
 
-    return reconstruct_hv_per_feval(max_fevals, x_list, f_list, pop_original)
+    return reconstruct_hv_per_feval(max_fevals, x_list, f_list, pop_empty)
 
 # Calculates the hypervolume with all the old points from the old generations
 def reconstruct_champion_per_feval(max_fevals, x_list, f_list, pop):

@@ -1,6 +1,7 @@
 .DS_Store
 .vscode
 *.nl
+*.sol
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
