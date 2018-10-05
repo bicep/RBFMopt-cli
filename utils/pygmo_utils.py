@@ -3,7 +3,6 @@ import math as math
 import numpy as numpy
 from scipy.interpolate import UnivariateSpline
 
-#Plots
 def plot_spline(plt, x_plot, y_plot, max_fevals, label):
     spline = UnivariateSpline(x_plot, y_plot, s=5)
 
@@ -11,7 +10,7 @@ def plot_spline(plt, x_plot, y_plot, max_fevals, label):
     spline = spline(spline_x)
     plt.plot(spline_x, spline, label=label)
 
-#Weighted Objective Function (Augmented Chebyshev)
+# Weighted Objective Function (Augmented Chebyshev)
 def calculate_weighted_objective(weights, values, rho):
     weighted_vals = [value * weight for value, weight in zip(values,weights)] 
     aug_tcheby = max(weighted_vals) + rho * sum(weighted_vals)
@@ -33,7 +32,7 @@ def reconstruct_hv_per_feval(max_fevals, x_list, f_list, hv_pop):
     return hv
 
 # Calculates the hypervolume with all the old points from the old generations
-# But starts with a full population
+# But starts with a full population. Used for the meta-heuristic algorithms
 def reconstruct_hv_per_feval_meta(max_fevals, x_list, f_list, hv_pop):
     # Have the same ref point at the beginning, and compute the starting hypervolume
     original_hv = pg.hypervolume(hv_pop)
@@ -69,6 +68,22 @@ def get_hv_for_algo(algo, max_fevals, pop_size, seed, problem):
 
     return reconstruct_hv_per_feval(max_fevals, x_list, f_list, pop_empty)
 
+# Meta-heuristic algorithms are stochastic and need to be run many times.
+# Calculates the hypervolume n times, and then gets the mean across columns
+# to give a 1D mean array
+def calculate_mean(n, algo, max_fevals, pop_size, seed, problem):
+
+    # 2D array whose elements are the n arrays of hypervolume
+    return_array = []
+    for i in range(n):
+        return_array.append(get_hv_for_algo(algo, max_fevals, pop_size, seed, problem))
+        # Make sure we change the seed each time the algo is being run
+        seed += i
+    return numpy.mean(return_array, axis=0)
+
+
+#The following algorithms are used for the single objective pygmo algorithms
+
 # Calculates the hypervolume with all the old points from the old generations
 def reconstruct_champion_per_feval(max_fevals, x_list, f_list, pop):
     # Have the same ref point at the beginning, and compute the starting hypervolume
@@ -100,13 +115,3 @@ def get_champion_for_algo(algo, max_fevals, pop_size, seed, problem):
     pop_original = pg.population(problem, pop_size, seed)
 
     return reconstruct_champion_per_feval(max_fevals, x_list, f_list, pop_original)
-
-# Calculates the hypervolume n times, and then gets the mean across columns
-# to give a 1D mean array
-def calculate_mean(n, algo, max_fevals, pop_size, seed, problem, fun):
-
-    # 2D array whose elements are the n arrays of hypervolume
-    return_array = []
-    for i in range(n):
-        return_array.append(fun(algo, max_fevals, pop_size, seed, problem))
-    return numpy.mean(return_array, axis=0)
