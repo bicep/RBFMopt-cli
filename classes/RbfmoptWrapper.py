@@ -1,4 +1,5 @@
 import pygmo as pg
+import os as os
 import rbfopt as rbfopt
 from classes.PygmoProblemWrapper import PygmoProblemWrapper
 from collections import deque
@@ -15,7 +16,9 @@ class RbfmoptWrapper():
       # let's set this later
       self.seed = 33
       self.max_fevals = max_fevals
-      self.settings = rbfopt.RbfoptSettings(minlp_solver_path='/Users/rogerko/dev/Opossum/pygmo/solvers/bonmin-osx/bonmin', nlp_solver_path='/Users/rogerko/dev/Opossum/pygmo/solvers/ipopt-osx/ipopt', max_evaluations=max_fevals)
+      bonmin_abspath = os.path.abspath('solvers/bonmin-osx/bonmin')
+      ipopt_abspath = os.path.abspath('solvers/ipopt-osx/ipopt')
+      self.settings = rbfopt.RbfoptSettings(minlp_solver_path=bonmin_abspath, nlp_solver_path=ipopt_abspath, max_evaluations=max_fevals)
       self.problem = PygmoProblemWrapper(problem, max_fevals)
 
   def evolve(self):
