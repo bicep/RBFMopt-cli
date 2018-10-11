@@ -8,7 +8,7 @@ from utils.pygmo_utils import calculate_weighted_objective
 
 class PygmoProblemWrapper(rbfopt.RbfoptBlackBox):
 
-  def __init__(self, pygmoProblem, max_fevals):
+  def __init__(self, pygmoProblem):
     self.seed = 33 # Have to make this in constants
     self.rho = 0.05
 
