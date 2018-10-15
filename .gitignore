@@ -3,6 +3,7 @@
 *.nl
 *.sol
 rbfmopt_thomas/
+graphics/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

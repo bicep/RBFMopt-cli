@@ -294,8 +294,13 @@ if(__name__ == "__main__"):
     #Add Rbfopt options to parser
     register_options(parser)
 
+    #Algorithm flags as mutually exclusive groups
+    algo_action = parser.add_mutually_exclusive_group(required=True)
+    algo_action.add_argument('--optimizeRBFWeightedSum', action = 'store_true', help = 'RBF Multi-Objective Optimization')
+    algo_action.add_argument('--optimizeRBF', action='store_true', help = 'RBF Single-Objective Optimization')
+    algo_action.add_argument('--optimizePygmo', action='store_true', help = 'Pygmo Multi-Objective Optimization')
+
     #Add additional options
-    parser.add_argument('--optimizeRBFWeightedSum', action = 'store_true', help = 'RBF Multi-Objective Optimization')
     parser.add_argument('--objective_n', '--objectiveN', action = 'store', dest = 'objective_n', metavar = 'OBJECTIVE_N', type = int, default = 1, help = 'number of objectives')
 	
     parser.add_argument('--param_list', '--param', action = 'store', dest = 'param_list', metavar = 'PARAM_LIST', type = str, help = 'list of parameters for initialization')
@@ -304,6 +309,8 @@ if(__name__ == "__main__"):
     parser.add_argument('--addPointsFile', action = 'store', type = str, help = 'file name for points to add to the model')
     parser.add_argument('--addValuesFile', action = 'store', type = str, help = 'file name for objective values to add to the model')
     parser.add_argument('--log', '-o', action = 'store', metavar = 'LOG_FILE_NAME', type = str, dest = 'output_stream', help = 'Name of log file for output redirection')
+
+
 
     #Get arguments
     args = parser.parse_args()
@@ -357,7 +364,10 @@ if(__name__ == "__main__"):
         if(output_stream is not None): alg.set_output_stream(output_stream)
 	
         alg.evolve()
-		
+	
+    # elif args.optimizeRBF: #This is for the single objective rbfopt 
+    # elif args.optimizePygmo:
+        # I need a way to turn a string into a call for the pygmo algorithm
     else:
         #objs = [[0,0],[1,1],[2,2],[3,3]]
         #transposed = transpose(objs)
