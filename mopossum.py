@@ -89,7 +89,7 @@ def construct_pygmo_problem(parbfopt_algm_list, n_obj, obj_funct):
     udp = PygmoUDP(dimension, var_lower, var_upper, var_type, n_obj, obj_funct)
     return pg.problem(udp)
 
-def register_options(parser):
+def register_rbfopt_options(parser):
     """Add options to the command line parser.
 
     Register all the options for the optimization algorithm.
@@ -284,25 +284,25 @@ def run_unit_test():
     unittest.TextTestRunner().run(test_suite)
     
 if(__name__ == "__main__"):
-    #Needed to make py2exe work
+    # Needed to make py2exe work
     freeze_support()
 
-    #Create rbfopt_cl line parsers
+    # Create rbfopt_cl line parsers
     desc = ('rbfopt_utiln RBFOpt, or get the current RBFOpt optimization state and evalueate the RBF surrogate model.')
+    
     parser = argparse.ArgumentParser(description=desc)
 
-    #Add Rbfopt options to parser
-    register_options(parser)
+    subparsers = parser.add_subparsers(help='Algorithms', dest='mode')
 
-    #Algorithm flags as mutually exclusive groups
-    algo_action = parser.add_mutually_exclusive_group(required=True)
-    algo_action.add_argument('--optimizeRBFWeightedSum', action = 'store_true', help = 'RBF Multi-Objective Optimization')
-    algo_action.add_argument('--optimizeRBF', action='store_true', help = 'RBF Single-Objective Optimization')
-    algo_action.add_argument('--optimizePygmo', action='store_true', help = 'Pygmo Multi-Objective Optimization')
+    rbfmopt_subparser = subparsers.add_parser('RbfWeightedSum', help='Rbfmopt algorithm settings')
+    rbfopt_subparser = subparsers.add_parser('Rbfopt', help='Rbfopt algorithm setttings')
 
-    #Add additional options
+    # Add Rbfopt options to rbfmopt sub parser
+    register_rbfopt_options(rbfmopt_subparser)
+    register_rbfopt_options(rbfopt_subparser)
+
+    # Add problem options
     parser.add_argument('--objective_n', '--objectiveN', action = 'store', dest = 'objective_n', metavar = 'OBJECTIVE_N', type = int, default = 1, help = 'number of objectives')
-	
     parser.add_argument('--param_list', '--param', action = 'store', dest = 'param_list', metavar = 'PARAM_LIST', type = str, help = 'list of parameters for initialization')
     parser.add_argument('--addNodes', action = 'store_true', help = 'add the points from the addPointsFile and addValuesFile to the model')
     parser.add_argument('--path', action = 'store', type = str, help = 'path for files, default is script directory')
@@ -310,13 +310,12 @@ if(__name__ == "__main__"):
     parser.add_argument('--addValuesFile', action = 'store', type = str, help = 'file name for objective values to add to the model')
     parser.add_argument('--log', '-o', action = 'store', metavar = 'LOG_FILE_NAME', type = str, dest = 'output_stream', help = 'Name of log file for output redirection')
 
-
-
-    #Get arguments
+    # Get arguments
     args = parser.parse_args()
 	
-    #Run RBFOpt
-    if args.optimizeRBFWeightedSum:
+    # Run RBFOpt
+    if args.mode == "RbfWeightedSum":
+
         assert args.param_list is not None, "Missing variable list parameters!"
 
         #Open output stream if necessary
@@ -348,11 +347,11 @@ if(__name__ == "__main__"):
 
         #Remove non-RBFOpt arguments from directory
         dict_args.pop('output_stream')
-        dict_args.pop('optimizeRBFWeightedSum')
         dict_args.pop('addNodes')
         dict_args.pop('path')
         dict_args.pop('addPointsFile')
         dict_args.pop('addValuesFile')
+        dict_args.pop('mode')
 
         parameters = dict_args.pop('param_list')
         objectiveN = dict_args.pop('objective_n')
