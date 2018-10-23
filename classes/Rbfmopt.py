@@ -2,7 +2,7 @@ import pygmo as pg
 import os as os
 import rbfopt as rbfopt
 from collections import deque
-from utils.pygmo_utils import calculate_weighted_objective
+from utils.utils import calculate_weighted_objective
 
 
 class Rbfmopt():

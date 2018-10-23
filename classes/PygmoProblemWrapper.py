@@ -1,10 +1,5 @@
-import pygmo as pg
 import rbfopt as rbfopt
-import math as math
-from collections import deque
-from utils.pygmo_utils import calculate_weighted_objective
-
-
+from utils.utils import calculate_weighted_objective
 
 class PygmoProblemWrapper(rbfopt.RbfoptBlackBox):
 
