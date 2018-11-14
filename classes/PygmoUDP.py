@@ -19,9 +19,6 @@ class PygmoUDP:
     def get_bounds(self):
         return (self.var_lower, self.var_upper)
 
-    def get_nx(self):
-        return self.dim
-
     def get_nobj(self):
         return self.n_obj
 
