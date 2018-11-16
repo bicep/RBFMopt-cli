@@ -86,10 +86,7 @@ if(__name__ == "__main__"):
         pygmo_read_write_problem = rbfmopt_utils.construct_pygmo_problem(
             parameters, objectiveN, rbfmopt_utils.read_write_obj_fun)
 
-        alg = RbfmoptWrapper(dict_args, pygmo_read_write_problem)
-
-        if(output_stream is not None):
-            alg.set_output_stream(output_stream)
+        alg = RbfmoptWrapper(dict_args, pygmo_read_write_problem, output_stream)
 
         alg.evolve()
 

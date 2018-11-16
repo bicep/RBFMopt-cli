@@ -7,10 +7,10 @@ from classes.Rbfmopt import Rbfmopt
 class RbfmoptWrapper(pg.algorithm):
     # So the settings tell us how many function evaluations to do, and the 
     # problem is instantiated together with the algorithm
-    def __init__(self, dict_settings, problem):
+    def __init__(self, dict_settings, problem, output_stream):
         self.settings = rbfopt.RbfoptSettings.from_dictionary(dict_settings)
         self.problem = PygmoProblemWrapper(problem)
-        self.rbfmoptClass = Rbfmopt(self.settings, self.problem)
+        self.rbfmoptClass = Rbfmopt(self.settings, self.problem, output_stream)
 
     def evolve(self):
         self.rbfmoptClass.optimize()
