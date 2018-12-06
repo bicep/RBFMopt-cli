@@ -94,7 +94,7 @@ if(__name__ == "__main__"):
     
     elif args.mode == "RBFOptWeightedSum":
         
-        assert args.param_list is not None, "Parameter strign is missing!"
+        assert args.param_list is not None, "Parameter string is missing!"
         parameters = args.param_list
 
         assert args.objective_n is not None, "Missing number of objectives!"
