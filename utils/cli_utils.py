@@ -1,5 +1,6 @@
 import ast
 from rbfopt import RbfoptSettings
+import argparse
 
 
 def register_problem_options(parser):
@@ -79,3 +80,11 @@ def register_rbfopt_model(parser):
     algset.add_argument('--valueFile', action='store', type = str, help = 'file name for objective values')
     algset.add_argument('--addPointsFile', action='store', type=str, help='file name for points to add to the model')
     algset.add_argument('--addValuesFile', action='store', type=str, help='file name for objective values to add to the model')
+
+def str2bool(v):
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
