@@ -1,3 +1,4 @@
+*.dat
 *.sln
 *.pyproj
 .DS_Store
