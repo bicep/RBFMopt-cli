@@ -9,6 +9,7 @@ class Rbfmopt():
     # So the settings tell us how many function evaluations to do, and the 
     # problem is instantiated together with the algorithm
     def __init__(self, settings, problem, output_stream):
+
         # Augmented Tchebycheff stuff
         self.rho = 0.05
         # let's set this later
@@ -20,6 +21,7 @@ class Rbfmopt():
         self.output_stream = output_stream
 
     def optimize(self):
+
         all_weights = deque(pg.decomposition_weights(
             n_f=self.problem.get_n_obj(), 
             n_w=self.max_fevals,
@@ -71,7 +73,9 @@ class Rbfmopt():
             f_list = self.problem.get_f_list()
 
     def get_f_list(self):
+
         return self.problem.get_f_list()
 
     def get_x_list(self):
+
         return self.problem.get_x_list()

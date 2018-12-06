@@ -3,22 +3,6 @@ import sys
 import numpy as np
 from rbfopt import RbfoptUserBlackBox
 
-
-def add_additional_nodes(algo_args):
-    points = None
-    values = None
-    # Add Additional points before evaluation
-    if algo_args.addNodes:
-        assert algo_args.path is not None, "Missing path parameters!"
-        assert algo_args.addPointsFile is not None, "Missing addPoints file parameter!"
-        assert algo_args.addValuesFile is not None, "Missing addValues file parameter!"
-
-        points, values = readPoints(
-            algo_args.path + algo_args.addPointsFile,
-            algo_args.path + algo_args.addValueFile)
-    return (points, values)
-
-
 def open_output_stream(algo_args):
     output_stream = None
 
@@ -30,32 +14,6 @@ def open_output_stream(algo_args):
             print(e, file=sys.stderr)
 
     return output_stream
-
-
-def readPoints(pointFilePath, valueFilePath):
-    """Read the points and values from a file
-    Parameters
-    ----------
-    pointFilePath : str
-        File Path to read points from.
-    valueFilePath : str
-        File Path to read values from.
-    """
-    points = np.loadtxt(pointFilePath, delimiter=" ", ndmin=2)
-    values = np.loadtxt(valueFilePath, delimiter=" ", ndmin=2)
-
-    # check that list is complete
-    assert len(points) == len(values), "%d points, but %d values" % (len(points), len(values))
-
-    # sort according to objective (minimization)
-    # values, points = zip(*sorted(zip(values, points)),
-    # key=lambda pair: pair[0])
-
-    points = np.array(points)
-    values = np.array(values)
-
-    return points, values
-
 
 # Opossum Evaluate
 def read_write_obj_fun(x):
@@ -76,9 +34,8 @@ def read_write_obj_fun(x):
 
     return float(func_value)
 
-
-# Opossum Black Box
-def construct_black_box(parbfopt_algm_list, obj_funct):
+# Parse Variable String
+def parse_variable_string(parbfopt_algm_list):
     # there should be a sequence of length 3*dimension of the form
     # (lower_bound_i, upper_bound_i, integer_i)
     # separbfopt_algted by comma. If integer_i=1 integer variable, otherwise
@@ -109,6 +66,14 @@ def construct_black_box(parbfopt_algm_list, obj_funct):
     assert(len(var_lower) == dimension)
     assert(len(var_upper) == dimension)
     assert(len(var_type) == dimension)
+
+    return(dimension, var_lower, var_upper, var_type)
+
+
+# Opossum Black Box
+def construct_black_box(parbfopt_algm_list, obj_funct):
+    
+    dimension, var_lower, var_upper, var_type = parse_variable_string(parbfopt_algm_list)
 
     return RbfoptUserBlackBox(dimension,
                               var_lower, var_upper, var_type, obj_funct)

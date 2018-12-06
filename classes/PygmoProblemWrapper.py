@@ -4,7 +4,7 @@ from utils.rbfmopt_utils import calculate_weighted_objective
 
 class PygmoProblemWrapper(rbfopt.RbfoptBlackBox):
 
-    def __init__(self, pygmoProblem):
+    def __init__(self, pygmoProblem, var_types):
         self.seed = 33
         self.rho = 0.05
 
@@ -12,6 +12,7 @@ class PygmoProblemWrapper(rbfopt.RbfoptBlackBox):
         self.x_list = []
         self.f_list = []
         self.current_weights = []
+        self.var_types = var_types
 
     def set_current_weights(self, wts):
         self.current_weights = wts
@@ -56,7 +57,7 @@ class PygmoProblemWrapper(rbfopt.RbfoptBlackBox):
     # vector
     # decision vector = population?
     def get_var_type(self):
-        return ['R'] * self.get_dimension()
+        return self.var_types
 
     def get_var_upper(self):
         return self.pygmoProblem.get_bounds()[1]
