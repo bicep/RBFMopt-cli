@@ -24,3 +24,6 @@ class PygmoUDP:
 
     def get_nobj(self):
         return self.n_obj
+
+    def get_var_types(self):
+        return self.var_type

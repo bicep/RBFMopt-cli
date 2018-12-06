@@ -1,3 +1,5 @@
+*.sln
+*.pyproj
 .DS_Store
 .vscode
 *.nl

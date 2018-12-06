@@ -6,14 +6,13 @@ def register_problem_options(parser):
     algset = parser.add_argument_group('Problem settings')
     algset.add_argument('--objective_n', '--objectiveN', action='store', dest='objective_n',
                         metavar='OBJECTIVE_N', type=int, default=1, help='number of objectives')
-    algset.add_argument('--param_list', '--param', required=True, action='store', dest='param_list',
+    algset.add_argument('--param_list', '--param', action='store', dest='param_list',
                         metavar='PARAM_LIST', type=str, help='list of parameters for initialization')
-
 
 def register_rbfopt_options(parser):
     """Add options to the command line parser.
 
-    Register all the options for the optimization algorithm.
+    Register options for RBFOpt optimization algorithm.
 
     Parameters
     ----------
@@ -38,7 +37,8 @@ def register_rbfopt_options(parser):
                   for val in param_docstring[1:]]
     # We extract the default from the docstring in case it is
     # necessary, but we use the actual default from the object above.
-    # param_default = [val.split(' ')[-1].rstrip('.').strip('\'') for val in param_help]
+    # param_default = [val.split(' ')[-1].rstrip('.').strip('\'') for val in
+    # param_help]
     for i in range(len(param_name)):
         if (param_type[i] == 'float'):
             type_fun = float
@@ -53,13 +53,29 @@ def register_rbfopt_options(parser):
                             type=type_fun,
                             help=param_help[i],
                             default=getattr(default, param_name[i]))
-    algset.add_argument('--addNodes', action='store_true',
-                        help='add the points from the addPointsFile and addValuesFile to the model')
-    algset.add_argument('--path', action='store', type=str,
-                        help='path for files, default is script directory')
-    algset.add_argument('--addPointsFile', action='store',
-                        type=str, help='file name for points to add to the model')
-    algset.add_argument('--addValuesFile', action='store', type=str,
-                        help='file name for objective values to add to the model')
+
     algset.add_argument('--log', '-o', action='store', metavar='LOG_FILE_NAME',
                         type=str, dest='output_stream', help='Name of log file for output redirection')
+
+def register_rbfopt_model(parser):
+    """Add options to the command line parser.
+
+    Register options for reading points from and adding points to RBFOpt's optimization algorithm.
+
+    Parameters
+    ----------
+    parser : argparse.ArgumentParser
+        The parser.
+
+    """
+    # Algorithmic settings
+    algset = parser.add_argument_group('Model settings')   
+
+    algset.add_argument('--path', action='store', type=str, help='path for files, default is script directory')
+    algset.add_argument('--stateFile', action='store', type = str, help = 'file name for algorithm state')
+    algset.add_argument('--approximate', action = 'store_true', help = 'approximate the points in the pointFile, otherwise return evaluated points')
+    algset.add_argument('--addNodes', action='store_true', help='add the points from the addPointsFile and addValuesFile to the model')
+    algset.add_argument('--pointFile', action='store', type = str, help = 'file name for points')
+    algset.add_argument('--valueFile', action='store', type = str, help = 'file name for objective values')
+    algset.add_argument('--addPointsFile', action='store', type=str, help='file name for points to add to the model')
+    algset.add_argument('--addValuesFile', action='store', type=str, help='file name for objective values to add to the model')
