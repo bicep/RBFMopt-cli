@@ -14,6 +14,7 @@ from __future__ import division
 from __future__ import absolute_import
 
 import argparse
+import pygmo as pg
 
 from multiprocessing import freeze_support
 from rbfopt import RbfoptSettings
@@ -25,6 +26,7 @@ import utils.rbfmopt_utils as rbfmopt_utils
 import utils.rbfopt_model_utils as model_utils
 import utils.cli_utils as cli_utils
 import utils.hv_record as hv_record
+import utils.pygmo_utils as pygmo_utils
 from classes.RbfmoptWrapper import RbfmoptWrapper
 
 if(__name__ == "__main__"):
@@ -45,6 +47,8 @@ if(__name__ == "__main__"):
         'RBFOpt', help='Rbfopt algorithm setttings')
     model_subparser = subparsers.add_parser(
         'RBFOptModel', help='Evaluate RBFOpt Surrogate Model and add points to it')
+    nsgaii_subparser = subparsers.add_parser(
+        'NSGAII', help='NSGAII algorithm settings')
 
     # Add Rbfopt options to rbfmopt and rbfopt sub parsers
     rbfmopt_subparser.add_argument('--hyper',
@@ -56,6 +60,8 @@ if(__name__ == "__main__"):
     cli_utils.register_rbfopt_options(rbfmopt_subparser)
     cli_utils.register_rbfopt_options(rbfopt_subparser)
     cli_utils.register_rbfopt_model(model_subparser)
+    cli_utils.register_pygmo_options(nsgaii_subparser)
+
 
     # Add problem options
     cli_utils.register_problem_options(parser)
@@ -159,8 +165,25 @@ if(__name__ == "__main__"):
         else:
             model_utils.getPoints(args.path + args.pointFile, args.path + args.valueFile, model)
 
-    # elif args.optimizePygmo:
+    elif args.mode == "NSGAII":
+
+        assert args.param_list is not None, "Parameter string is missing!"
+        parameters = args.param_list
+
+        assert args.objective_n is not None, "Missing number of objectives!"
+        objectiveN = args.objective_n
+
+        seed = args.seed
+        pop_size = args.pop_size
+
         # I need a way to turn a string into a call for the pygmo algorithm
+        # But it is okay first do nsga II
+        pygmo_read_write_problem, var_types = rbfmopt_utils.construct_pygmo_problem(
+            parameters, objectiveN, rbfmopt_utils.read_write_obj_fun)
+
+        algo_nsga2 = pg.algorithm(pg.nsga2(gen=1))
+
+        pygmo_utils.evolve_pygmo_algo(algo_nsga2, pop_size, seed, pygmo_read_write_problem)
 
     else:
         # objs = [[0,0],[1,1],[2,2],[3,3]]
