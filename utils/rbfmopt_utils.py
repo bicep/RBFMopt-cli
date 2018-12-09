@@ -4,6 +4,8 @@ import numpy as np
 import pygmo as pg
 from classes.PygmoUDP import PygmoUDP
 from utils.rbfopt_utils import parse_variable_string
+import utils.hv_record as hv_record
+
 
 def construct_pygmo_problem(parbfopt_algm_list, n_obj, obj_funct):
 
@@ -25,7 +27,10 @@ def read_write_obj_fun(x):
         newline = newline + '%.6f' % var_value + ','
     newline = newline + '%.6f' % x[dimension - 1]
 
-    # write line
+    # hv_bool and hv_array are our global records
+    if (hv_record.hv_bool):
+        sys.stdout.write('%.6f' % hv_record.hv_array[-1] + ',')
+
     sys.stdout.write(newline + "\n")
     sys.stdout.flush()
     # wait for reply

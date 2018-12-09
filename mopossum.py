@@ -24,6 +24,7 @@ import utils.rbfopt_utils as my_rbfopt_utils
 import utils.rbfmopt_utils as rbfmopt_utils
 import utils.rbfopt_model_utils as model_utils
 import utils.cli_utils as cli_utils
+import utils.hv_record as hv_record
 from classes.RbfmoptWrapper import RbfmoptWrapper
 
 if(__name__ == "__main__"):
@@ -46,6 +47,12 @@ if(__name__ == "__main__"):
         'RBFOptModel', help='Evaluate RBFOpt Surrogate Model and add points to it')
 
     # Add Rbfopt options to rbfmopt and rbfopt sub parsers
+    rbfmopt_subparser.add_argument('--hyper',
+                                   action='store',
+                                   type=cli_utils.str2bool,
+                                   default=False,
+                                   help='Should hypervolume be written to stream? Default false.')
+
     cli_utils.register_rbfopt_options(rbfmopt_subparser)
     cli_utils.register_rbfopt_options(rbfopt_subparser)
     cli_utils.register_rbfopt_model(model_subparser)
@@ -104,6 +111,10 @@ if(__name__ == "__main__"):
         # and the unknown args
         algo_args = rbfmopt_subparser.parse_known_args()[0]
 
+        # Set hypervolume global setting
+        if (algo_args.hyper):
+            hv_record.hv_bool = True
+
         # Open output stream if necessary
         output_stream = my_rbfopt_utils.open_output_stream(algo_args)
 
@@ -114,6 +125,7 @@ if(__name__ == "__main__"):
         # pass the dict_args with all the rbfopt setting arguments to
         # construct an Rbfopt settings object
         dict_args.pop('output_stream')
+        dict_args.pop('hyper')
 
         pygmo_read_write_problem, var_types = rbfmopt_utils.construct_pygmo_problem(
             parameters, objectiveN, rbfmopt_utils.read_write_obj_fun)
@@ -122,7 +134,8 @@ if(__name__ == "__main__"):
 
         alg.evolve()
 
-    elif args.mode == "RBFOptModel": # This is to evaluate RBFOpt Surrogate Model and add points to it
+    # This is to evaluate RBFOpt Surrogate Model and add points to it
+    elif args.mode == "RBFOptModel":
 
         assert args.path is not None, "Missing path parameter!"
         assert args.pointFile is not None, "Missing point file parameter!"
