@@ -50,13 +50,19 @@ if(__name__ == "__main__"):
     nsgaii_subparser = subparsers.add_parser(
         'NSGAII', help='NSGAII algorithm settings')
 
-    # Add Rbfopt options to rbfmopt and rbfopt sub parsers
     rbfmopt_subparser.add_argument('--hyper',
                                    action='store',
                                    type=cli_utils.str2bool,
                                    default=False,
                                    help='Should hypervolume be written to stream? Default false.')
 
+    nsgaii_subparser.add_argument('--hyper',
+                                  action='store',
+                                  type=cli_utils.str2bool,
+                                  default=False,
+                                  help='Should hypervolume be written to stream? Default false.')
+
+    # Add Rbfopt options to rbfmopt and rbfopt sub parsers
     cli_utils.register_rbfopt_options(rbfmopt_subparser)
     cli_utils.register_rbfopt_options(rbfopt_subparser)
     cli_utils.register_rbfopt_model(model_subparser)
@@ -173,8 +179,14 @@ if(__name__ == "__main__"):
         assert args.objective_n is not None, "Missing number of objectives!"
         objectiveN = args.objective_n
 
-        seed = args.seed
-        pop_size = args.pop_size
+        algo_args = nsgaii_subparser.parse_known_args()[0]
+
+        # Set hypervolume global setting
+        if (algo_args.hyper):
+            hv_record.hv_bool = True
+
+        seed = algo_args.seed
+        pop_size = algo_args.pop_size
 
         # I need a way to turn a string into a call for the pygmo algorithm
         # But it is okay first do nsga II
