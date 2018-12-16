@@ -25,7 +25,7 @@ import utils.rbfopt_utils as my_rbfopt_utils
 import utils.rbfmopt_utils as rbfmopt_utils
 import utils.rbfopt_model_utils as model_utils
 import utils.cli_utils as cli_utils
-import utils.hv_record as hv_record
+import utils.global_record as global_record
 import utils.pygmo_utils as pygmo_utils
 from classes.RbfmoptWrapper import RbfmoptWrapper
 
@@ -55,6 +55,12 @@ if(__name__ == "__main__"):
                                    type=cli_utils.str2bool,
                                    default=False,
                                    help='Should hypervolume be written to stream? Default false.')
+
+    rbfmopt_subparser.add_argument('--decomp_method',
+                                   action='store',
+                                   type=str,
+                                   default="tchebycheff",
+                                   help='Decomposition objectives method. Choose between \'tchebycheff\', \'weighted\', \'bi\'(boundary interception). Default tchebycheff.')
 
     nsgaii_subparser.add_argument('--hyper',
                                   action='store',
@@ -123,9 +129,13 @@ if(__name__ == "__main__"):
         # and the unknown args
         algo_args = rbfmopt_subparser.parse_known_args()[0]
 
+        # set decomp_method global setting
+        assert (algo_args.decomp_method == 'tchebycheff' or algo_args.decomp_method == 'weighted' or algo_args.decomp_method == 'bi'), "Invalid decomposition method!"
+        global_record.decomp_method = algo_args.decomp_method
+
         # Set hypervolume global setting
         if (algo_args.hyper):
-            hv_record.hv_bool = True
+            global_record.hv_bool = True
 
         # Open output stream if necessary
         output_stream = my_rbfopt_utils.open_output_stream(algo_args)
@@ -138,6 +148,7 @@ if(__name__ == "__main__"):
         # construct an Rbfopt settings object
         dict_args.pop('output_stream')
         dict_args.pop('hyper')
+        dict_args.pop('decomp_method')
 
         pygmo_read_write_problem, var_types = rbfmopt_utils.construct_pygmo_problem(
             parameters, objectiveN, rbfmopt_utils.read_write_obj_fun)
@@ -183,7 +194,7 @@ if(__name__ == "__main__"):
 
         # Set hypervolume global setting
         if (algo_args.hyper):
-            hv_record.hv_bool = True
+            global_record.hv_bool = True
 
         seed = algo_args.seed
         pop_size = algo_args.pop_size

@@ -2,7 +2,7 @@ import sys
 import pygmo as pg
 from classes.PygmoUDP import PygmoUDP
 from utils.rbfopt_utils import parse_variable_string
-import utils.hv_record as hv_record
+import utils.global_record as global_record
 
 
 def construct_pygmo_problem(parbfopt_algm_list, n_obj, obj_funct):
@@ -26,8 +26,8 @@ def read_write_obj_fun(x):
     newline = newline + '%.6f' % x[dimension - 1]
 
     # hv_bool and hv_array are our global records
-    if (hv_record.hv_bool):
-        sys.stdout.write('%.6f' % hv_record.hv_array[-1] + ',')
+    if (global_record.hv_bool):
+        sys.stdout.write('%.6f' % global_record.hv_array[-1] + ',')
 
     sys.stdout.write(newline + "\n")
     sys.stdout.flush()
@@ -39,9 +39,7 @@ def read_write_obj_fun(x):
     return obj_values
 
 
-# Weighted Objective Function (Augmented Chebyshev)
-def calculate_weighted_objective(weights, values, rho):
-
-    weighted_vals = [value * weight for value, weight in zip(values, weights)] 
-    aug_tcheby = max(weighted_vals) + rho * sum(weighted_vals)
-    return aug_tcheby
+# Weighted Objective Function using Pygmo's decompose_objectives
+def calculate_weighted_objective(weights, values, method):
+    ref_point = [0] * len(values)
+    return (pg.decompose_objectives(values, weights, ref_point, method))[0]

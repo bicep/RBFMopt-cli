@@ -2,14 +2,13 @@ import pygmo as pg
 import rbfopt as rbfopt
 from utils.rbfmopt_utils import calculate_weighted_objective
 from utils.pygmo_utils import calculate_hv
-from utils.hv_record import hv_array
+import utils.global_record as global_record
 
 
 class PygmoProblemWrapper(rbfopt.RbfoptBlackBox):
 
     def __init__(self, pygmoProblem, var_types):
         self.seed = 33
-        self.rho = 0.05
 
         self.pygmoProblem = pygmoProblem
         self.x_list = []
@@ -38,7 +37,7 @@ class PygmoProblemWrapper(rbfopt.RbfoptBlackBox):
             hv = calculate_hv(self.hv_pop)
 
         # hv_array is our global record of the hv.
-        hv_array.append(hv)
+        global_record.hv_array.append(hv)
 
         # fitness returns the fitness vector as an iterable python object, so
         # we get the zero index
@@ -52,7 +51,7 @@ class PygmoProblemWrapper(rbfopt.RbfoptBlackBox):
         weightedSingleFitnessValue = calculate_weighted_objective(
                                                           self.current_weights,
                                                           fitnessValue,
-                                                          self.rho)
+                                                          global_record.decomp_method)
 
         return weightedSingleFitnessValue
 
