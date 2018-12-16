@@ -1,6 +1,4 @@
 import sys
-import csv
-import numpy as np
 import pygmo as pg
 from classes.PygmoUDP import PygmoUDP
 from utils.rbfopt_utils import parse_variable_string
@@ -40,9 +38,10 @@ def read_write_obj_fun(x):
 
     return obj_values
 
+
 # Weighted Objective Function (Augmented Chebyshev)
 def calculate_weighted_objective(weights, values, rho):
-    
+
     weighted_vals = [value * weight for value, weight in zip(values, weights)] 
     aug_tcheby = max(weighted_vals) + rho * sum(weighted_vals)
     return aug_tcheby

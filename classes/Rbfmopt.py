@@ -23,7 +23,7 @@ class Rbfmopt():
     def optimize(self):
 
         all_weights = deque(pg.decomposition_weights(
-            n_f=self.problem.get_n_obj(), 
+            n_f=self.problem.get_n_obj(),
             n_w=self.max_fevals,
             method="low discrepancy",
             seed=self.seed).tolist())
@@ -56,7 +56,7 @@ class Rbfmopt():
                     self.rho) for fitnessValue in f_list]
                 print('Weighted objectives: {}'.format(weighted_objs)) 
 
-                alg = rbfopt.RbfoptAlgorithm(self.settings, 
+                alg = rbfopt.RbfoptAlgorithm(self.settings,
                                              self.problem,
                                              self.problem.get_x_list(),
                                              weighted_objs,

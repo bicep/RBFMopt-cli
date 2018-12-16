@@ -40,7 +40,7 @@ class PygmoProblemWrapper(rbfopt.RbfoptBlackBox):
         # hv_array is our global record of the hv.
         hv_array.append(hv)
 
-        # fitness returns the fitness vector as an iterable python object, so 
+        # fitness returns the fitness vector as an iterable python object, so
         # we get the zero index
         fitnessValue = self.pygmoProblem.fitness(x)
         # Store the population values so that we can back calculate the 
@@ -48,7 +48,7 @@ class PygmoProblemWrapper(rbfopt.RbfoptBlackBox):
         self.x_list.append(x)
         self.f_list.append(fitnessValue)
         # weighted value to get single fitness value
-        # Have to make sure that current weights is set first!!
+        # Have to make sure that current weights are set first!!
         weightedSingleFitnessValue = calculate_weighted_objective(
                                                           self.current_weights,
                                                           fitnessValue,
