@@ -2,6 +2,7 @@ import pygmo as pg
 import rbfopt as rbfopt
 from collections import deque
 from utils.rbfmopt_utils import calculate_weighted_objective
+import utils.global_record as global_record
 
 
 class Rbfmopt():
@@ -53,7 +54,7 @@ class Rbfmopt():
                 weighted_objs = [calculate_weighted_objective(
                     current_weights,
                     fitnessValue,
-                    self.rho) for fitnessValue in f_list]
+                    global_record.decomp_method) for fitnessValue in f_list]
                 print('Weighted objectives: {}'.format(weighted_objs)) 
 
                 alg = rbfopt.RbfoptAlgorithm(self.settings,
