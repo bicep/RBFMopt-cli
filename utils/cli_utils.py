@@ -10,6 +10,11 @@ def register_problem_options(parser):
     algset.add_argument('--param_list', '--param', action='store', dest='param_list',
                         metavar='PARAM_LIST', type=str, help='list of parameters for initialization')
 
+def register_pygmo_options(parser):
+    algset = parser.add_argument_group('Algorithmic settings')
+    algset.add_argument('--pop_size', action='store', dest='pop_size', type=int, default=24, help='Population size for evolutionary algorithm to work on')
+    algset.add_argument('--seed', action='store', dest='seed', type=int, default=30, help='Seed used to generate the random population')
+
 def register_rbfopt_options(parser):
     """Add options to the command line parser.
 
