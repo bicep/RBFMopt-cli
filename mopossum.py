@@ -15,6 +15,7 @@ from __future__ import absolute_import
 
 import argparse
 import pygmo as pg
+import rbfmopt
 
 from multiprocessing import freeze_support
 from rbfopt import RbfoptSettings
@@ -27,7 +28,7 @@ import utils.rbfopt_model_utils as model_utils
 import utils.cli_utils as cli_utils
 import utils.global_record as global_record
 import utils.pygmo_utils as pygmo_utils
-from classes.RbfmoptWrapper import RbfmoptWrapper
+
 
 if(__name__ == "__main__"):
     # Needed to make py2exe work
@@ -131,7 +132,7 @@ if(__name__ == "__main__"):
 
         # set decomp_method global setting
         assert (algo_args.decomp_method == 'tchebycheff' or algo_args.decomp_method == 'weighted' or algo_args.decomp_method == 'bi'), "Invalid decomposition method!"
-        global_record.decomp_method = algo_args.decomp_method
+        weight_method = algo_args.decomp_method
 
         # Set hypervolume global setting
         if (algo_args.hyper):
@@ -153,7 +154,7 @@ if(__name__ == "__main__"):
         pygmo_read_write_problem, var_types = rbfmopt_utils.construct_pygmo_problem(
             parameters, objectiveN, rbfmopt_utils.read_write_obj_fun)
 
-        alg = RbfmoptWrapper(dict_args, pygmo_read_write_problem, var_types, output_stream)
+        alg = rbfmopt.RbfmoptWrapper(dict_args, pygmo_read_write_problem, var_types, output_stream, weight_method, global_record)
 
         alg.evolve()
 

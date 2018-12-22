@@ -1,6 +1,6 @@
 import sys
 import pygmo as pg
-from classes.PygmoUDP import PygmoUDP
+from utils.PygmoUDP import PygmoUDP
 from utils.rbfopt_utils import parse_variable_string
 import utils.global_record as global_record
 
