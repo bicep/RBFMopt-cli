@@ -89,7 +89,7 @@ if(__name__ == "__main__"):
 
         # parse_known_args returns a tuple with the known parsed args
         # and the unknown args
-        algo_args = rbfmopt_subparser.parse_known_args()[0]
+        algo_args = rbfopt_subparser.parse_known_args()[0]
 
         # Open output stream if necessary
         output_stream = my_rbfopt_utils.open_output_stream(algo_args)
