@@ -63,6 +63,12 @@ if(__name__ == "__main__"):
                                    default="tchebycheff",
                                    help='Decomposition objectives method. Choose between \'tchebycheff\', \'weighted\', \'bi\'(boundary interception). Default tchebycheff.')
 
+    rbfmopt_subparser.add_argument('--cycle',
+                                   action='store',
+                                   type=int,
+                                   default=3,
+                                   help='Cycle number for the algorithm: default is 3.')
+
     nsgaii_subparser.add_argument('--hyper',
                                   action='store',
                                   type=cli_utils.str2bool,
@@ -138,6 +144,9 @@ if(__name__ == "__main__"):
         if (algo_args.hyper):
             global_record.hv_bool = True
 
+        # Set cycle number
+        cycle = algo_args.cycle
+
         # Open output stream if necessary
         output_stream = my_rbfopt_utils.open_output_stream(algo_args)
 
@@ -150,11 +159,19 @@ if(__name__ == "__main__"):
         dict_args.pop('output_stream')
         dict_args.pop('hyper')
         dict_args.pop('decomp_method')
+        dict_args.pop('cycle')
 
         pygmo_read_write_problem, var_types = rbfmopt_utils.construct_pygmo_problem(
             parameters, objectiveN, rbfmopt_utils.read_write_obj_fun)
 
-        alg = rbfmopt.RbfmoptWrapper(dict_args, pygmo_read_write_problem, var_types, output_stream, weight_method, global_record)
+        alg = rbfmopt.RbfmoptWrapper(
+            dict_settings=dict_args,
+            problem=pygmo_read_write_problem,
+            var_types=var_types,
+            output_stream=output_stream,
+            weight_method=weight_method,
+            cycle=cycle,
+            hv_array=global_record.hv_array)
 
         alg.evolve()
 
