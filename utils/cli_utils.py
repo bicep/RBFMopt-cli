@@ -10,10 +10,29 @@ def register_problem_options(parser):
     algset.add_argument('--param_list', '--param', action='store', dest='param_list',
                         metavar='PARAM_LIST', type=str, help='list of parameters for initialization')
 
+
 def register_pygmo_options(parser):
     algset = parser.add_argument_group('Algorithmic settings')
     algset.add_argument('--pop_size', action='store', dest='pop_size', type=int, default=24, help='Population size for evolutionary algorithm to work on')
     algset.add_argument('--seed', action='store', dest='seed', type=int, default=30, help='Seed used to generate the random population')
+    register_hyper(algset)
+
+
+def register_rbfmopt_options(parser):
+    algset = register_rbfopt_options(parser)
+    register_hyper(algset)
+    algset.add_argument('--decomp_method',
+                        action='store',
+                        type=str,
+                        default="tchebycheff",
+                        help='Decomposition objectives method. Choose between \'tchebycheff\', \'weighted\', \'bi\'(boundary interception). Default tchebycheff.')
+
+    algset.add_argument('--cycle',
+                        action='store',
+                        type=int,
+                        default=3,
+                        help='Cycle number for the algorithm: default is 3.')
+
 
 def register_rbfopt_options(parser):
     """Add options to the command line parser.
@@ -62,6 +81,8 @@ def register_rbfopt_options(parser):
 
     algset.add_argument('--log', '-o', action='store', metavar='LOG_FILE_NAME',
                         type=str, dest='output_stream', help='Name of log file for output redirection')
+    return algset
+
 
 def register_rbfopt_model(parser):
     """Add options to the command line parser.
@@ -85,6 +106,15 @@ def register_rbfopt_model(parser):
     algset.add_argument('--valueFile', action='store', type = str, help = 'file name for objective values')
     algset.add_argument('--addPointsFile', action='store', type=str, help='file name for points to add to the model')
     algset.add_argument('--addValuesFile', action='store', type=str, help='file name for objective values to add to the model')
+
+
+def register_hyper(parser):
+    parser.add_argument('--hyper',
+                        action='store',
+                        type=str2bool,
+                        default=False,
+                        help='Should hypervolume be written to stream? Default false.')
+
 
 def str2bool(v):
     if v.lower() in ('yes', 'true', 't', 'y', '1'):

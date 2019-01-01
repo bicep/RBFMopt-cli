@@ -51,36 +51,11 @@ if(__name__ == "__main__"):
     nsgaii_subparser = subparsers.add_parser(
         'NSGAII', help='NSGAII algorithm settings')
 
-    rbfmopt_subparser.add_argument('--hyper',
-                                   action='store',
-                                   type=cli_utils.str2bool,
-                                   default=False,
-                                   help='Should hypervolume be written to stream? Default false.')
-
-    rbfmopt_subparser.add_argument('--decomp_method',
-                                   action='store',
-                                   type=str,
-                                   default="tchebycheff",
-                                   help='Decomposition objectives method. Choose between \'tchebycheff\', \'weighted\', \'bi\'(boundary interception). Default tchebycheff.')
-
-    rbfmopt_subparser.add_argument('--cycle',
-                                   action='store',
-                                   type=int,
-                                   default=3,
-                                   help='Cycle number for the algorithm: default is 3.')
-
-    nsgaii_subparser.add_argument('--hyper',
-                                  action='store',
-                                  type=cli_utils.str2bool,
-                                  default=False,
-                                  help='Should hypervolume be written to stream? Default false.')
-
     # Add Rbfopt options to rbfmopt and rbfopt sub parsers
-    cli_utils.register_rbfopt_options(rbfmopt_subparser)
+    cli_utils.register_rbfmopt_options(rbfmopt_subparser)
     cli_utils.register_rbfopt_options(rbfopt_subparser)
     cli_utils.register_rbfopt_model(model_subparser)
     cli_utils.register_pygmo_options(nsgaii_subparser)
-
 
     # Add problem options
     cli_utils.register_problem_options(parser)
