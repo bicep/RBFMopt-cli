@@ -16,6 +16,7 @@ from __future__ import absolute_import
 import argparse
 import pygmo as pg
 import rbfmopt
+import cma
 
 from multiprocessing import freeze_support
 from rbfopt import RbfoptSettings
@@ -29,13 +30,14 @@ import utils.cli_utils as cli_utils
 import utils.global_record as global_record
 import utils.pygmo_utils as pygmo_utils
 
+import random
 
 if(__name__ == "__main__"):
-    # Needed to make py2exe work
-    freeze_support()
+    # Was needed to make py2exe work
+    # freeze_support()
 
     # Create rbfopt_cl line parsers
-    desc = ('rbfopt_utiln RBFOpt, or get the current RBFOpt optimization state and evalueate the RBF surrogate model.')
+    desc = ('rbfopt_utiln RBFOpt, or get the current RBFOpt optimization state and evaluate the RBF surrogate model.')
 
     parser = argparse.ArgumentParser(description=desc)
 
@@ -50,12 +52,15 @@ if(__name__ == "__main__"):
         'RBFOptModel', help='Evaluate RBFOpt Surrogate Model and add points to it')
     nsgaii_subparser = subparsers.add_parser(
         'NSGAII', help='NSGAII algorithm settings')
+    cmaes_subparser = subparsers.add_parser(
+        'CMAES', help = 'CMA-ES algorithm settings')
 
     # Add Rbfopt options to rbfmopt and rbfopt sub parsers
     cli_utils.register_rbfmopt_options(rbfmopt_subparser)
     cli_utils.register_rbfopt_options(rbfopt_subparser)
     cli_utils.register_rbfopt_model(model_subparser)
     cli_utils.register_pygmo_options(nsgaii_subparser)
+    cli_utils.register_cmaes_options(cmaes_subparser)
 
     # Add problem options
     cli_utils.register_problem_options(parser)
@@ -63,8 +68,8 @@ if(__name__ == "__main__"):
     # Get arguments
     args = parser.parse_args()
 
-    # Run RBFOpt
-    if args.mode == "RBFOpt":  # This is for the single objective rbfopt
+    # Run single-objective RBFOpt
+    if args.mode == "RBFOpt":
 
         assert args.param_list is not None, "Parameter string is missing!"
         parameters = args.param_list
@@ -98,7 +103,41 @@ if(__name__ == "__main__"):
             alg.set_output_stream(output_stream)
 
         alg.optimize()
+
+    # Run single-objective CMA-ES
+    elif args.mode == "CMAES":
+
+        assert args.param_list is not None, "Parameter string is missing!"
+        parameters = args.param_list
+
+        # Use parameters to create Black Box and remove them from dictonary
+        black_box = my_rbfopt_utils.construct_black_box(parameters,
+                                                        my_rbfopt_utils.
+                                                        read_write_obj_fun)
+
+        # parse_known_args returns a tuple with the known parsed args
+        # and the unknown args
+        algo_args = cmaes_subparser.parse_known_args()[0]
+
+        # Create dictionary from subparser
+        dict_args = vars(algo_args)
+        
+        #Check if inital solutions (i.e., starting point) is provided
+        if algo_args.initialSolution is not None:
+            initalSolutionStr = dict_args.pop('initialSolution')
+            initalSolution = list(map(float, initalSolutionStr.split(';')))
+            assert len(initalSolution) == black_box.get_dimension(), "Initial Solution for CMA-ES has incorrect dimension"
+        #Else generate random starting point
+        else:
+            initalSolution = black_box.get_dimension() * [random.random()]
+            
+        #With random initial solution and initial sigma = 0.5
+        #Integer Variables?
+        #Max Evaluations?
+        es = cma.CMAEvolutionStrategy(initalSolution, 0.5, {'bounds': [0,1], 'verb_log': 0})
+        es.optimize(black_box.evaluate)
     
+    # Run multi-objective RBFMopt
     elif args.mode == "RBFOptWeightedSum":
         
         assert args.param_list is not None, "Parameter string is missing!"
@@ -150,7 +189,7 @@ if(__name__ == "__main__"):
 
         alg.evolve()
 
-    # This is to evaluate RBFOpt Surrogate Model and add points to it
+    # Evaluate RBFOpt Surrogate Model and add points to it
     elif args.mode == "RBFOptModel":
 
         assert args.path is not None, "Missing path parameter!"
@@ -175,6 +214,7 @@ if(__name__ == "__main__"):
         else:
             model_utils.getPoints(args.path + args.pointFile, args.path + args.valueFile, model)
 
+    # Run multi-objective NSGA-II
     elif args.mode == "NSGAII":
 
         assert args.param_list is not None, "Parameter string is missing!"
