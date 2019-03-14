@@ -80,8 +80,14 @@ def register_rbfmopt_options(parser):
     algset.add_argument('--cycle',
                         action='store',
                         type=int,
-                        default=3,
-                        help='Cycle number for the algorithm: default is 3.')
+                        default=9,
+                        help='Cycle number for the algorithm: default is 9.')
+
+    algset.add_argument('--max_filter_mult',
+                        action='store',
+                        type=int,
+                        default=9,
+                        help='Multiplier for maximum number of points to re-feed into RBFMopt. So if 9 then max number of points will be 9 * dim of problem. Default is 9')
 
 #RBFOpt Model Parser
 def register_rbfopt_model(parser):

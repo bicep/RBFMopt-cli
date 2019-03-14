@@ -159,7 +159,10 @@ if(__name__ == "__main__"):
             global_record.hv_bool = True
 
         # Set cycle number
-        cycle = algo_args.cycle
+        n_cycle = algo_args.cycle
+
+        # Set max_filter number
+        max_filter_mult = algo_args.max_filter_mult
 
         # Open output stream if necessary
         output_stream = my_rbfopt_utils.open_output_stream(algo_args)
@@ -174,9 +177,14 @@ if(__name__ == "__main__"):
         dict_args.pop('hyper')
         dict_args.pop('decomp_method')
         dict_args.pop('cycle')
+        dict_args.pop('max_filter_mult')
 
         pygmo_read_write_problem, var_types = rbfmopt_utils.construct_pygmo_problem(
             parameters, objectiveN, rbfmopt_utils.read_write_obj_fun)
+
+        dimension, _, _, _ = my_rbfopt_utils.parse_variable_string(parameters)
+
+        max_filter = max_filter_mult * dimension
 
         alg = rbfmopt.RbfmoptWrapper(
             dict_settings=dict_args,
@@ -184,7 +192,8 @@ if(__name__ == "__main__"):
             var_types=var_types,
             output_stream=output_stream,
             weight_method=weight_method,
-            cycle=cycle,
+            cycle=n_cycle,
+            max_filter=max_filter,
             hv_array=global_record.hv_array)
 
         alg.evolve()
